@@ -576,7 +576,7 @@ spawn(function()
     Test.Name = "highlight"
     Test.Enabled = true
     Test.FillColor = Color3.fromRGB(0, 191, 255) -- xanh nước biển
-    Test.OutlineColor = Color3.fromRGB(255, 255, 255)
+    Test.OutlineColor = Color3.fromRGB(0, 0, 0)
     Test.FillTransparency = 0.5
     Test.OutlineTransparency = 0.2
     Test.Parent = plr.Character
