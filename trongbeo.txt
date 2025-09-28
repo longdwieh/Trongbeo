@@ -656,8 +656,8 @@ end
 
 local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhTuanDzai-Hub/UIMenu/refs/heads/main/TuanAnhIOS/Uifluent.lua"))()
 local Window = Fluent:CreateWindow({
-    Title="Trong Nguyễn hub",
-    SubTitle="  by trọng béo", 
+    Title="Thạch Hoài Phong",
+    SubTitle="Hoài Phong", 
     TabWidth=160, 
     Theme="trọng nguyễn ",
     Acrylic=false,
