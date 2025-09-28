@@ -775,7 +775,7 @@ Tabs.Main:AddButton({
         end
 })
 Tabs.Main:AddSection("Trọng Béo đẹp zaii")
-local FarmLevel = Tabs.Main:AddToggle("FarmLevel", {Title = "Auto Farm Level", Description = "Update Cày Level 2650-2750 New", Default = false})
+local FarmLevel = Tabs.Main:AddToggle("FarmLevel", {Title = "Auto Farm Level", Description = "Update Cày Level 2650-2800 New", Default = false})
 FarmLevel:OnChanged(function(Value)
   _G.Level = Value
 end)
