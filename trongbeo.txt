@@ -751,14 +751,14 @@ toggleButton.MouseButton1Click:Connect(function()
     end
 end)
 local Tabs = {
-  Main = Window:AddTab({Title = "Tab Farming", Icon = "rbxassetid://110657725541747"}),
+  Main = Window:AddTab({Title = "Tab Farming", Icon = "rbxassetid://116231965107271"}),
   Settings = Window:AddTab({Title = "Tab Setting Farm", Icon = "rbxassetid://116231965107271"}),
   Melee = Window:AddTab({Title = "Tab Auto Get Melee V2", Icon = "rbxassetid://116231965107271"}),
   Quests = Window:AddTab({Title = "Tab Items Farm", Icon = "rbxassetid://116231965107271"}),
   SeaEvent = Window:AddTab({Title = "Tab Sea Events", Icon = "rbxassetid://116231965107271"}),
-  Mirage = Window:AddTab({Title = "Tab Mirage + RaceV4", Icon = "rbxassetid://110657725541747"}),
+  Mirage = Window:AddTab({Title = "Tab Mirage + RaceV4", Icon = "rbxassetid://116231965107271"}),
   Drago = Window:AddTab({Title = "Tab Drago Dojo", Icon = "rbxassetid://116231965107271"}),
-  Prehistoric = Window:AddTab({Title = "Tab Prehistoric", Icon = "rbxassetid://110657725541747"}),
+  Prehistoric = Window:AddTab({Title = "Tab Prehistoric", Icon = "rbxassetid://116231965107271"}),
   Raids = Window:AddTab({Title = "Tab Raid", Icon = "rbxassetid://116231965107271"}),
   Combat = Window:AddTab({Title = "Tab Combat PVP", Icon = "rbxassetid://116231965107271"}),
   Travel = Window:AddTab({Title = "Tab Teleport", Icon = "rbxassetid://116231965107271"}),
@@ -768,13 +768,13 @@ local Tabs = {
 }
 
 Tabs.Main:AddButton({
-        Title="Link Join Sever Discord",
-        Description="discord.gg/kK2vMrUsQy",
+        Title="Link Join Sever trọng béo",
+        Description="https://discord.gg/MZh9Z7hcC9",
         Callback=function()
-            setclipboard(tostring("https://discord.gg/kK2vMrUsQy")) 
+            setclipboard(tostring("https://discord.gg/MZh9Z7hcC9")) 
         end
 })
-Tabs.Main:AddSection("Tuấn Anh IOS Đẹp Zai Hẹ Hẹ")
+Tabs.Main:AddSection("Trọng Béo đẹp zaii")
 local FarmLevel = Tabs.Main:AddToggle("FarmLevel", {Title = "Auto Farm Level", Description = "Update Cày Level 2650-2750 New", Default = false})
 FarmLevel:OnChanged(function(Value)
   _G.Level = Value
