@@ -768,13 +768,13 @@ local Tabs = {
 }
 
 Tabs.Main:AddButton({
-        Title="Link Join Sever trọng béo",
+        Title="Link Join Sever Phong",
         Description="https://discord.gg/MZh9Z7hcC9",
         Callback=function()
             setclipboard(tostring("https://discord.gg/MZh9Z7hcC9")) 
         end
 })
-Tabs.Main:AddSection("Trọng Béo đẹp zaii")
+Tabs.Main:AddSection("Phong Yêu em")
 local FarmLevel = Tabs.Main:AddToggle("FarmLevel", {Title = "Auto Farm Level", Description = "Update Cày Level 2650-2800 New", Default = false})
 FarmLevel:OnChanged(function(Value)
   _G.Level = Value
