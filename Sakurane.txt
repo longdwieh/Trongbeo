@@ -15,7 +15,7 @@ local player = LocalPlayer
 local plr = LocalPlayer
 local playerGui = player:WaitForChild("PlayerGui")
 -- tạo UI
-local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDzaiScript/Setting/refs/heads/main/FastMax.lua"))()
+local Fluent = local Fluent = loadstring(game:HttpGet("https://raw.githubusercontent.com/AnhDzaiScript/Setting/refs/heads/main/FastMax.lua"))()
 
 local Window = Fluent:CreateWindow({
     Title = "Sakura Hub On Top",
@@ -67,7 +67,8 @@ local Tabs = {
     Teleport = Window:AddTab({ Title = "Teleport", Icon = "map" }),
     Setting = Window:AddTab({ Title = "Setting", Icon = "settings" })
 }
--- 🧩 Hàm xác định nhiệm vụ farm theo level
+
+-- 🧩 Hàm xác định nhiệm vụ farm theo level
 local World1 = game.PlaceId == 2753915549
 local World2 = game.PlaceId == 4442272183
 local World3 = game.PlaceId == 7449423635
@@ -715,6 +716,7 @@ function CheckQuest()
 			NameMon = "Grand Devotee";
 			CFrameQuest = CFrame.new( 9639.39, -1992.45, 9617.28);
 			CFrameMon = CFrame.new( 9582.31, -1993.47, 9829.67);
+
                 end
             end)
         end
