@@ -1,0 +1,345 @@
+-- AzureStyle_SafeMockHub.lua
+-- LocalScript -> StarterGui
+-- SAFE: UI-only + sandboxed "executor" with VERY limited allowed commands.
+-- Do NOT use this to run external or exploit scripts.
+
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
+local player = Players.LocalPlayer
+
+-- CONFIG: default theme colors (you can tweak)
+local theme = {
+    Primary = Color3.fromRGB(84, 101, 255), -- bright bluish-purple
+    Secondary = Color3.fromRGB(24, 28, 60),
+    Accent = Color3.fromRGB(0,170,255),
+    Text = Color3.fromRGB(235,235,240)
+}
+
+-- Helper: create instance and set properties
+local function new(class, props)
+    local obj = Instance.new(class)
+    if props then
+        for k,v in pairs(props) do
+            obj[k] = v
+        end
+    end
+    return obj
+end
+
+-- Root GUI
+local screenGui = new("ScreenGui", {Name = "AzureMockHub", ResetOnSpawn = false, Parent = player:WaitForChild("PlayerGui")})
+
+-- Main container
+local main = new("Frame", {
+    Name = "Main",
+    Parent = screenGui,
+    Size = UDim2.new(0, 720, 0, 420),
+    Position = UDim2.new(0.5, -360, 0.5, -210),
+    BackgroundColor3 = theme.Secondary,
+    BorderSizePixel = 0,
+})
+new("UICorner", {Parent = main, CornerRadius = UDim.new(0, 10)})
+local grad = new("UIGradient", {Parent = main})
+grad.Color = ColorSequence.new{ ColorSequenceKeypoint.new(0, theme.Secondary), ColorSequenceKeypoint.new(1, Color3.fromRGB(12,14,40)) }
+grad.Rotation = 45
+
+-- Top bar
+local top = new("Frame", {Parent = main, Size = UDim2.new(1,0,0,36), BackgroundColor3 = Color3.fromRGB(8,10,30), BorderSizePixel = 0, Position = UDim2.new(0,0,0,0)})
+new("UICorner", {Parent = top, CornerRadius = UDim.new(0, 10)})
+local title = new("TextLabel", {Parent = top, Text = "Azure (Mock) Hub", Size = UDim2.new(1,-160,1,0), Position = UDim2.new(0,12,0,0), BackgroundTransparency = 1, Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = theme.Text, TextXAlignment = Enum.TextXAlignment.Left})
+local author = new("TextLabel", {Parent = top, Text = "by YourName", Size = UDim2.new(0,140,1,0), Position = UDim2.new(1,-150,0,0), BackgroundTransparency = 1, Font = Enum.Font.Gotham, TextSize = 14, TextColor3 = Color3.fromRGB(160,160,170), TextXAlignment = Enum.TextXAlignment.Right})
+
+-- Close/minimize buttons
+local btnClose = new("TextButton", {Parent = top, Text = "✕", Size = UDim2.new(0,36,0,24), Position = UDim2.new(1,-42,0.5,-12), BackgroundTransparency = 0.8, Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = theme.Text})
+new("UICorner", {Parent = btnClose, CornerRadius = UDim.new(0,6)})
+btnClose.MouseButton1Click:Connect(function()
+    main.Visible = false
+end)
+local btnMin = new("TextButton", {Parent = top, Text = "—", Size = UDim2.new(0,36,0,24), Position = UDim2.new(1,-86,0.5,-12), BackgroundTransparency = 0.8, Font = Enum.Font.GothamBold, TextSize = 16, TextColor3 = theme.Text})
+new("UICorner", {Parent = btnMin, CornerRadius = UDim.new(0,6)})
+local minimized = false
+btnMin.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        main.Size = UDim2.new(0, 420, 0, 36)
+        main.Position = UDim2.new(main.Position.X.Scale, main.Position.X.Offset, main.Position.Y.Scale, main.Position.Y.Offset) -- keep pos
+    else
+        main.Size = UDim2.new(0, 720, 0, 420)
+    end
+end)
+
+-- Left sidebar (tabs)
+local sidebar = new("Frame", {Parent = main, Size = UDim2.new(0, 150, 1, -36), Position = UDim2.new(0,0,0,36), BackgroundColor3 = Color3.fromRGB(12,16,40)})
+new("UICorner", {Parent = sidebar, CornerRadius = UDim.new(0,6)})
+local tabs = {"Home","Scripts","Settings","About"}
+local tabButtons = {}
+for i, name in ipairs(tabs) do
+    local b = new("TextButton", {Parent = sidebar, Text = name, Size = UDim2.new(1, -12, 0, 38), Position = UDim2.new(0, 8, 0, (i-1)*46 + 12), BackgroundColor3 = (name=="Scripts") and theme.Primary or Color3.fromRGB(10,12,30), Font = Enum.Font.Gotham, TextSize = 14, TextColor3 = theme.Text})
+    new("UICorner", {Parent = b, CornerRadius = UDim.new(0,6)})
+    tabButtons[name] = b
+end
+
+-- Right content area
+local content = new("Frame", {Parent = main, Size = UDim2.new(1, -160, 1, -56), Position = UDim2.new(0, 160, 0, 48), BackgroundTransparency = 1})
+
+-- Tabs content containers
+local pages = {}
+for _, name in ipairs(tabs) do
+    local p = new("Frame", {Parent = content, Size = UDim2.new(1,0,1,0), BackgroundTransparency = 1, Visible = false})
+    pages[name] = p
+end
+pages["Home"].Visible = true
+
+-- HOME page
+local homeLbl = new("TextLabel", {Parent = pages["Home"], Text = "Welcome to Azure Mock Hub", Font = Enum.Font.GothamBold, TextSize = 20, TextColor3 = theme.Text, BackgroundTransparency = 1, Position = UDim2.new(0,6,0,6), Size = UDim2.new(1,-12,0,30), TextXAlignment = Enum.TextXAlignment.Left})
+local homeText = new("TextLabel", {Parent = pages["Home"], Text = "This is a SAFE UI mock. Execute is sandboxed and cannot run arbitrary code.", Font = Enum.Font.Gotham, TextSize = 14, TextColor3 = Color3.fromRGB(200,200,210), BackgroundTransparency = 1, Position = UDim2.new(0,6,0,42), Size = UDim2.new(1,-12,0,60), TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left})
+
+-- SCRIPTS page: editor + buttons + console
+local editor = new("TextBox", {Parent = pages["Scripts"], MultiLine = true, ClearTextOnFocus = false, Text = "-- Type SAFE commands: 'print <text>' or 'setcolor r g b'\n", Font = Enum.Font.Code, TextSize = 14, TextColor3 = Color3.fromRGB(240,240,240), BackgroundColor3 = Color3.fromRGB(8,10,30), Size = UDim2.new(1,-12,0,220), Position = UDim2.new(0,6,0,6), TextWrapped = false})
+new("UICorner", {Parent = editor, CornerRadius = UDim.new(0,6)})
+local btnFrame = new("Frame", {Parent = pages["Scripts"], Size = UDim2.new(1,-12,0,36), Position = UDim2.new(0,6,0,232), BackgroundTransparency = 1})
+local function makeBtn(parent, text, posX)
+    local b = new("TextButton", {Parent = parent, Text = text, Size = UDim2.new(0,100,1,0), Position = UDim2.new(0,posX,0,0), BackgroundColor3 = theme.Primary, Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = Color3.new(1,1,1)})
+    new("UICorner", {Parent = b, CornerRadius = UDim.new(0,6)})
+    return b
+end
+local btnExecute = makeBtn(btnFrame, "Execute", 0)
+local btnClear = makeBtn(btnFrame, "Clear", 112)
+local btnSave = makeBtn(btnFrame, "Save", 224)
+local btnLoad = makeBtn(btnFrame, "Load", 336)
+local btnDelete = makeBtn(btnFrame, "Delete", 448)
+
+-- Console / output
+local console = new("TextBox", {Parent = pages["Scripts"], MultiLine = true, ClearTextOnFocus = false, Text = "-- Console --", Font = Enum.Font.Gotham, TextSize = 13, TextColor3 = Color3.fromRGB(220,220,220), BackgroundColor3 = Color3.fromRGB(6,8,20), Size = UDim2.new(1,-12,0,110), Position = UDim2.new(0,6,0,276), TextWrapped = true})
+new("UICorner", {Parent = console, CornerRadius = UDim.new(0,6)})
+
+-- SETTINGS page (shows theme controls)
+local setlbl = new("TextLabel", {Parent = pages["Settings"], Text = "Theme Color (R G B):", Font = Enum.Font.GothamBold, TextSize = 14, TextColor3 = theme.Text, BackgroundTransparency = 1, Position = UDim2.new(0,6,0,6), Size = UDim2.new(1,-12,0,20), TextXAlignment = Enum.TextXAlignment.Left})
+local rBox = new("TextBox", {Parent = pages["Settings"], Text = tostring(math.floor(theme.Primary.R*255)), Position = UDim2.new(0,6,0,32), Size = UDim2.new(0,80,0,28)})
+local gBox = new("TextBox", {Parent = pages["Settings"], Text = tostring(math.floor(theme.Primary.G*255)), Position = UDim2.new(0,94,0,32), Size = UDim2.new(0,80,0,28)})
+local bBox = new("TextBox", {Parent = pages["Settings"], Text = tostring(math.floor(theme.Primary.B*255)), Position = UDim2.new(0,182,0,32), Size = UDim2.new(0,80,0,28)})
+local applyBtn = makeBtn(pages["Settings"], "Apply", 280)
+applyBtn.Parent.Position = UDim2.new(0,280,0,32) -- fix pos
+
+-- ABOUT page
+local about = new("TextLabel", {Parent = pages["About"], Text = "This is a SAFE mock of an Azure-style hub. It DOES NOT execute external code.", Font = Enum.Font.Gotham, TextSize = 13, TextColor3 = Color3.fromRGB(200,200,210), BackgroundTransparency = 1, Position = UDim2.new(0,6,0,6), Size = UDim2.new(1,-12,1,-12), TextWrapped = true})
+
+-- Tab handling
+local currentTab = "Home"
+for name, btn in pairs(tabButtons) do
+    btn.MouseButton1Click:Connect(function()
+        for k,v in pairs(pages) do v.Visible = false end
+        pages[name].Visible = true
+        currentTab = name
+        -- highlight clicked
+        for k,b in pairs(tabButtons) do
+            b.BackgroundColor3 = (k==name) and theme.Primary or Color3.fromRGB(10,12,30)
+        end
+    end)
+end
+
+-- Saved scripts storage (in PlayerGui)
+local savedFolder = screenGui:FindFirstChild("SavedScripts")
+if not savedFolder then
+    savedFolder = Instance.new("Folder", screenGui)
+    savedFolder.Name = "SavedScripts"
+end
+
+-- UTIL: append console
+local function appendConsole(text)
+    console.Text = console.Text .. "\n" .. tostring(text)
+    -- auto scroll: set selection
+    console.SelectionStart = #console.Text
+end
+
+-- SANDBOXED executor (VERY limited!)
+-- Allowed commands:
+-- 1) print <text>        -> prints to console
+-- 2) setcolor r g b      -> sets theme.Primary to (r,g,b) (0-255 ints) and updates UI colors
+local function executeSafeScript(scriptText)
+    -- split lines
+    for line in scriptText:gmatch("[^\r\n]+") do
+        line = line:match("^%s*(.-)%s*$") -- trim
+        if line == "" then
+            -- skip
+        else
+            local cmd, rest = line:match("^(%S+)%s*(.-)$")
+            if not cmd then
+                appendConsole("Unknown line: " .. line)
+            else
+                cmd = cmd:lower()
+                if cmd == "print" then
+                    if rest and rest ~= "" then
+                        appendConsole(rest)
+                    else
+                        appendConsole("(print) missing text")
+                    end
+                elseif cmd == "setcolor" then
+                    local r,g,b = rest:match("^(%d+)%s+(%d+)%s+(%d+)$")
+                    if r and g and b then
+                        r = math.clamp(tonumber(r),0,255)
+                        g = math.clamp(tonumber(g),0,255)
+                        b = math.clamp(tonumber(b),0,255)
+                        theme.Primary = Color3.fromRGB(r,g,b)
+                        -- apply to UI highlights
+                        for k,v in pairs(tabButtons) do v.BackgroundColor3 = (k=="Scripts") and theme.Primary or Color3.fromRGB(10,12,30) end
+                        btnExecute.BackgroundColor3 = theme.Primary
+                        btnClear.BackgroundColor3 = theme.Primary
+                        btnSave.BackgroundColor3 = theme.Primary
+                        btnLoad.BackgroundColor3 = theme.Primary
+                        btnDelete.BackgroundColor3 = theme.Primary
+                        appendConsole(("Theme color set to %d %d %d"):format(r,g,b))
+                    else
+                        appendConsole("setcolor expects: setcolor R G B (0-255)")
+                    end
+                else
+                    appendConsole("Command not allowed: " .. cmd)
+                end
+            end
+        end
+    end
+end
+
+-- Button actions
+btnExecute.MouseButton1Click:Connect(function()
+    local txt = editor.Text or ""
+    appendConsole("=== Execute (sandbox) ===")
+    executeSafeScript(txt)
+    appendConsole("=== End ===")
+end)
+
+btnClear.MouseButton1Click:Connect(function()
+    editor.Text = ""
+end)
+
+-- Save: ask for name (simple prompt via small TextBox)
+local function promptSave()
+    local prompt = new("TextBox", {Parent = screenGui, Size = UDim2.new(0,260,0,36), Position = UDim2.new(0.5,-130,0.3,0), Text = "Enter script name", ClearTextOnFocus = false, Font = Enum.Font.Gotham, TextSize = 14})
+    new("UICorner", {Parent = prompt, CornerRadius = UDim.new(0,6)})
+    prompt.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            local name = prompt.Text:match("^%s*(.-)%s*$")
+            if name ~= "" then
+                -- create or update StringValue under SavedScripts
+                local sv = savedFolder:FindFirstChild(name)
+                if not sv then
+                    sv = Instance.new("StringValue", savedFolder)
+                    sv.Name = name
+                end
+                sv.Value = editor.Text
+                appendConsole("Saved script: " .. name)
+            else
+                appendConsole("Save cancelled (empty name).")
+            end
+        end
+        prompt:Destroy()
+    end)
+end
+
+btnSave.MouseButton1Click:Connect(promptSave)
+
+-- Load: show simple popup list to choose
+local function promptLoad()
+    -- small list frame
+    local list = new("Frame", {Parent = screenGui, Size = UDim2.new(0,320,0,200), Position = UDim2.new(0.5,-160,0.28,0), BackgroundColor3 = Color3.fromRGB(6,8,20)})
+    new("UICorner", {Parent = list, CornerRadius = UDim.new(0,8)})
+    local title = new("TextLabel", {Parent = list, Text = "Load Script - Click to load", BackgroundTransparency = 1, Font = Enum.Font.GothamBold, TextSize = 15, TextColor3 = theme.Text, Size = UDim2.new(1, -12, 0, 28), Position = UDim2.new(0,6,0,6)})
+    local scroll = new("ScrollingFrame", {Parent = list, Size = UDim2.new(1,-12,1,-44), Position = UDim2.new(0,6,0,36), BackgroundTransparency = 1, ScrollBarThickness = 6})
+    local layout = new("UIListLayout", {Parent = scroll, Padding = UDim.new(0,6)})
+    -- populate
+    for _,sv in ipairs(savedFolder:GetChildren()) do
+        if sv:IsA("StringValue") then
+            local b = new("TextButton", {Parent = scroll, Text = sv.Name, Size = UDim2.new(1,0,0,28), BackgroundColor3 = Color3.fromRGB(12,14,36), Font = Enum.Font.Gotham, TextSize = 14, TextColor3 = theme.Text})
+            new("UICorner", {Parent = b, CornerRadius = UDim.new(0,6)})
+            b.MouseButton1Click:Connect(function()
+                editor.Text = sv.Value or ""
+                appendConsole("Loaded script: " .. sv.Name)
+                list:Destroy()
+            end)
+        end
+    end
+    -- destroy if clicked outside or escape
+    list.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton2 then
+            list:Destroy()
+        end
+    end)
+end
+
+btnLoad.MouseButton1Click:Connect(promptLoad)
+
+-- Delete: similar listing to delete
+local function promptDelete()
+    local list = new("Frame", {Parent = screenGui, Size = UDim2.new(0,320,0,200), Position = UDim2.new(0.5,-160,0.28,0), BackgroundColor3 = Color3.fromRGB(6,8,20)})
+    new("UICorner", {Parent = list, CornerRadius = UDim.new(0,8)})
+    new("TextLabel", {Parent = list, Text = "Delete Script - Click to delete", BackgroundTransparency = 1, Font = Enum.Font.GothamBold, TextSize = 15, TextColor3 = theme.Text, Size = UDim2.new(1, -12, 0, 28), Position = UDim2.new(0,6,0,6)})
+    local scroll = new("ScrollingFrame", {Parent = list, Size = UDim2.new(1,-12,1,-44), Position = UDim2.new(0,6,0,36), BackgroundTransparency = 1, ScrollBarThickness = 6})
+    for _,sv in ipairs(savedFolder:GetChildren()) do
+        if sv:IsA("StringValue") then
+            local b = new("TextButton", {Parent = scroll, Text = sv.Name, Size = UDim2.new(1,0,0,28), BackgroundColor3 = Color3.fromRGB(12,14,36), Font = Enum.Font.Gotham, TextSize = 14, TextColor3 = theme.Text})
+            new("UICorner", {Parent = b, CornerRadius = UDim.new(0,6)})
+            b.MouseButton1Click:Connect(function()
+                appendConsole("Deleted script: " .. sv.Name)
+                sv:Destroy()
+                list:Destroy()
+            end)
+        end
+    end
+end
+
+btnDelete.MouseButton1Click:Connect(promptDelete)
+
+-- Apply theme from Settings
+applyBtn.MouseButton1Click:Connect(function()
+    local r = tonumber(rBox.Text) or 0
+    local g = tonumber(gBox.Text) or 0
+    local b = tonumber(bBox.Text) or 0
+    r = math.clamp(r,0,255); g = math.clamp(g,0,255); b = math.clamp(b,0,255)
+    theme.Primary = Color3.fromRGB(r,g,b)
+    -- update UI
+    for k,v in pairs(tabButtons) do v.BackgroundColor3 = (k=="Scripts") and theme.Primary or Color3.fromRGB(10,12,30) end
+    btnExecute.BackgroundColor3 = theme.Primary
+    btnClear.BackgroundColor3 = theme.Primary
+    btnSave.BackgroundColor3 = theme.Primary
+    btnLoad.BackgroundColor3 = theme.Primary
+    btnDelete.BackgroundColor3 = theme.Primary
+    appendConsole(("Applied theme: %d %d %d"):format(r,g,b))
+end)
+
+-- Dragging main window
+local dragging, dragStart, startPos, dragInput
+top.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = true
+        dragStart = input.Position
+        startPos = main.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+top.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement then dragInput = input end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        local delta = input.Position - dragStart
+        main.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+-- Avatar toggle (small image top-left) to hide/show main
+local avt = new("ImageButton", {Parent = screenGui, Size = UDim2.new(0,58,0,58), Position = UDim2.new(0,12,0,12), Image = "rbxthumb://type=AvatarHeadShot&id="..player.UserId.."&w=420&h=420", BackgroundTransparency = 1})
+new("UICorner", {Parent = avt, CornerRadius = UDim.new(1,0)})
+local stroke = new("UIStroke", {Parent = avt, Thickness = 2, Color = theme.Accent})
+local visible = true
+avt.MouseButton1Click:Connect(function()
+    visible = not visible
+    main.Visible = visible
+end)
+
+-- initial console note
+appendConsole("Azure-style MOCK hub loaded. THIS IS SAFE (no external code execution).")
+
+-- Done
+print("Azure-style mock hub (safe) loaded for player:", player.Name)
