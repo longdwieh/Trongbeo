@@ -10,3 +10,5 @@ Windows:AddMinimizeButton({
   Corner = { CornerRadius = UDim.new(0, 4) }
 })
 
+local Info = Windows:MakeTab({"Discord","Info"})
+local Farm = Windows:MakeTab({"Tab Farming","Farm"})
