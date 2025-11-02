@@ -1,8 +1,8 @@
 local redzlib = loadstring(game:HttpGet("https://raw.githubusercontent.com/daucobonhi/UiRedzV5/refs/heads/main/DemoUi.lua"))();
 
    local Windows = redzlib:MakeWindow({
-    Title = "TrongNguyen Hub",
-    SubTitle = "Make",
+    Title = "Longdeptrai Hub",
+    SubTitle = "by Longdeptrai",
     SaveFolder = "Blox Fruits.lua"
 })
 Windows:AddMinimizeButton({
