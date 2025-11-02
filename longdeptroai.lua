@@ -4,7 +4,7 @@ local Flu = loadstring(game:HttpGet("https://raw.githubusercontent.com/dawid-scr
 -- 🪄 Cửa sổ chính
 local Window = Flu:CreateWindow({
     Title = "🌸 Neon Hub 🌸",
-    SubTitle = "UI Base by ChatGPT",
+    SubTitle = " by Longdeptrai",
     Size = UDim2.new(0, 450, 0, 320),
     Theme = "Dark",
     MinimizeKey = Enum.KeyCode.RightControl
